@@ -105,7 +105,7 @@ for city, (minx, miny, maxx, maxy) in city_boxes:
     for elem in elements:
         tags = elem.get("tags", {})
         highway = tags.get("highway")
-        if highway not in ["primary", "secondary", "tertiary","residential","trunk"]:
+        if highway not in ["primary", "secondary", "tertiary","trunk"]:
             continue
         line = LineString([(pt['lon'], pt['lat']) for pt in elem['geometry']])
         all_records.append({
@@ -167,7 +167,7 @@ gdf["mean_curvature"] = curvatures
 gdf["surface"] = gdf["surface"].fillna(gdf["surface"].mode().iloc[0] if not gdf["surface"].mode().empty else "asphalt")
 gdf["lanes"] = gdf["lanes"].fillna(2)
 gdf["maxspeed"] = gdf.apply(
-    lambda row: row["maxspeed"] or {"primary": "80", "secondary": "60","residential":"30", "tertiary": "40","Trunk": "90"}.get(row["highway"], "30"),
+    lambda row: row["maxspeed"] or {"primary": "80", "secondary": "60", "tertiary": "40","Trunk": "90"}.get(row["highway"], "30"),
     axis=1
 )
 
@@ -197,5 +197,5 @@ columns = ["city", "osm_id", "name", "highway", "lanes", "maxspeed", "surface",
 
 # drop roads that  segments are null
 grouped = grouped[(grouped["mean_curvature"] != 0) & (~grouped["mean_curvature"].isna())]
-grouped[columns].to_csv("roads_with_residential.csv", index=False)
+grouped[columns].to_csv("roads_characteristics.csv", index=False)
 print(" Done! Saved to roads_with_residential.csv")
